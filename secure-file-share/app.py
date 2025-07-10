@@ -11,10 +11,8 @@ KEY_FILE = 'secret.key'
 HASH_FILE = 'file_hashes.json'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# --- Ensure upload folder exists ---
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# --- AES Key Management ---
 def load_key():
     if not os.path.exists(KEY_FILE):
         key = Fernet.generate_key()
@@ -29,11 +27,9 @@ def load_key():
 
 fernet = Fernet(load_key())
 
-# --- SHA256 Hashing ---
 def hash_data(data):
     return hashlib.sha256(data).hexdigest()
 
-# --- Hash Storage Management ---
 def load_hashes():
     if not os.path.exists(HASH_FILE):
         return {}
@@ -46,7 +42,6 @@ def save_hash(filename, hash_value):
     with open(HASH_FILE, 'w') as f:
         json.dump(hashes, f, indent=2)
 
-# ---------------- ROUTES ----------------
 
 @app.route('/')
 def index():
@@ -95,7 +90,6 @@ def download_file(filename):
     except Exception as e:
         return f"Decryption failed: {str(e)}"
 
-    # Integrity check
     expected_hash = load_hashes().get(filename)
     actual_hash = hash_data(decrypted_data)
 
@@ -107,7 +101,6 @@ def download_file(filename):
             <p>This file may have been tampered with.</p>
         '''
 
-    # Save decrypted file temporarily
     original_name = filename.replace('.enc', '')
     temp_path = os.path.join(UPLOAD_FOLDER, 'temp_' + original_name)
     with open(temp_path, 'wb') as f:
@@ -121,7 +114,6 @@ def download_file(filename):
 
     return response
 
-# ----------------------------------------
 
 if __name__ == '__main__':
     app.run(debug=True)
