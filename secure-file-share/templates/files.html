@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+<head>
+  <title>Encrypted Files</title>
+</head>
+<body>
+  <h1>Encrypted Files</h1>
+  <ul>
+    {% for file in files %}
+    <li>{{ file }} — <a href="{{ url_for('download_file', filename=file) }}">Download & Decrypt</a></li>
+    {% endfor %}
+  </ul>
+  <a href="/">← Back to Upload</a>
+</body>
+</html>
